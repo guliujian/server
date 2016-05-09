@@ -4,20 +4,14 @@
 		$status_id=$_POST['status_id'];
 		$object_user_name=$_POST['object_user_name'];
 		$content=$_POST['content'];*/
-		$con = mysql_connect("localhost","root","");
-		if (!$con)
-		{
-		  die('Could not connect: ' . mysql_error());
-		}
-		mysql_select_db("test",$con);
-		mysql_query("set names 'gbk'");
+		
 		$unread_id=$_SESSION['unread_evaluate_id'];
 		$sql1="SELECT * FROM jingdian_evaluate WHERE id_name='$id_name' AND evaluate_id<'$unread_id' ORDER BY time_stamp  DESC LIMIT 3";
-		$result1 = mysql_query($sql1,$con);
+		$result1 = mysqli_query($con,$sql1);
 		if (mysql_num_rows($result1)>1){
 			$i=0;
 			$jingdian_evaluate="";
-			while($row1 = mysql_fetch_array($result1)){
+			while($row1 = mysqli_fetch_array($result1)){
 				$id=$row1['evaluator_id'];
 				//$jingdian_evaluate[$i]['evaluator_id']=$row1['evaluator_id'];
 				//iconv('gb2312//IGNORE','UTF-8',$row1['evaluator_name']);
@@ -25,12 +19,12 @@
 				//echo $name;
 				//echo $jingdian_evaluate[$i]['evaluator_name'];
 				$sql2="SELECT * FROM user WHERE user_id='$id'";
-				$result2=mysql_query($sql2,$con);
-				$row2=mysql_fetch_array($result2);
+				$result2=mysqli_query($con,$sql2);
+				$row2=mysqli_fetch_array($result2);
 				$jingdian_evaluate[$i]['evaluate_id']=$row1['evaluate_id'];
 				$jingdian_evaluate[$i]['portrait']=$row2['portrait'];
-				$jingdian_evaluate[$i]['evaluator_name']=iconv('gb2312//IGNORE','UTF-8',$row2['user_name']);
-				$jingdian_evaluate[$i]['content']=iconv('gb2312//IGNORE','UTF-8',$row1['content']);
+				$jingdian_evaluate[$i]['evaluator_name']=$row2['user_name'];
+				$jingdian_evaluate[$i]['content']==$row1['content'];
 				$jingdian_evaluate[$i]['star']=$row1['star'];
 				$_SESSION['unread_evaluate_id']=$row1['evaluate_id'];
 				$i++;
@@ -57,5 +51,3 @@
 				return 1;
 			}
 		}
-
-?>

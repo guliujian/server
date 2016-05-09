@@ -1,23 +1,15 @@
 <?php
 	session_start();
 	//echo "lala";
-	//$_SESSION['evaluator_id']='20099';//´Ë´¦ÉèÖÃÓÃ»§idÎª20099£¬ÔÚµÇÂ½µÄÊ±ºò»á½«SESSIONµÄuser_id¸³ÖµµÄ
-	$evaluate['evaluator_id']=$_SESSION['evaluator_id'];//Êµ¼ÊÉÏÓ¦Îªuser_idµ«´Ë´¦²âÊÔ£¬ËùÒÔ¾ÍÔÝÊ±¶¨ÒåÒ»¸öevaluator_id
+	//$_SESSION['evaluator_id']='20099';//æ­¤å¤„è®¾ç½®ç”¨æˆ·idä¸º20099ï¼Œåœ¨ç™»é™†çš„æ—¶å€™ä¼šå°†SESSIONçš„user_idèµ‹å€¼çš„
+	$evaluate['evaluator_id']=$_SESSION['evaluator_id'];//å®žé™…ä¸Šåº”ä¸ºuser_idä½†æ­¤å¤„æµ‹è¯•ï¼Œæ‰€ä»¥å°±æš‚æ—¶å®šä¹‰ä¸€ä¸ªevaluator_id
 	$evaluate['content']=$_POST['content'];
 	//echo evaluate
 	$evaluate['id_name']=$_POST['id_name'];
 	//$jingdian_id=$_POST['jingdian_id'];
 	$evaluate['star']=$_POST['star'];
-	$evaluate['content']=iconv('UTF-8','gb2312//IGNORE',$evaluate['content']);
+	$evaluate['content']=$evaluate['content'];
 //	$content
-	$con = mysql_connect("localhost","root","");
-	if (!$con)
-	{
-	  die('Could not connect: ' . mysql_error());
-	}
-	
-	mysql_select_db("test",$con);
-	mysql_query("set names 'GB2312'");
 	$evaluator_id=$evaluate['evaluator_id'];
 	$content=$evaluate['content'];
 	//echo $
@@ -26,12 +18,12 @@
 	$id_name=$evaluate['id_name'];
 	
 	$sql0="SELECT portrait FROM user WHERE user_id='$evaluator_id'";
-	$result0=mysql_query($sql0,$con);
-	$row0=mysql_fetch_array($result0);
+	$result0=mysqli_query($con,$sql0);
+	$row0=mysqli_fetch_array($result0);
 	$evaluate['portrait']=$row0['portrait'];
 	$sql1="SELECT jingdian_id FROM jingdian_inf WHERE id_name='$id_name'";
-	$result1 = mysql_query($sql1,$con);
-	$row1 = mysql_fetch_array($result1);
+	$result1 = mysqli_query($con,$sql1);
+	$row1 = mysqli_fetch_array($result1);
 		
 	$new_jingdian_id = $row1['jingdian_id'];
 	$id=$_SESSION['evaluator_id'];
@@ -51,6 +43,3 @@
 		$evaluate['content']=iconv('gb2312//IGNORE','UTF-8',$evaluate['content']);
 		$evaluate['evaluator_name']=iconv('gb2312//IGNORE','UTF-8',$evaluate['evaluator_name']);
 		echo json_encode($evaluate);
-
-	
-?>
