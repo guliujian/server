@@ -1,8 +1,8 @@
 <?php
 		session_start();
 		include_once ("mysql_connect.php");
-		function login($l_name,$l_password){
-		$l_name=iconv('UTF-8','gb2312//IGNORE',$l_name);
+		function login($l_name,$l_password,$con){
+//		$l_name=iconv('UTF-8','gb2312//IGNORE',$l_name);
 		$sql_reg="SELECT * FROM user WHERE user_name='$l_name'";//选择姓名为输入值的一条记录
 		$result1=mysqli_query($con,$sql_reg);
 		$password="";
@@ -28,7 +28,7 @@
 		
 	}
 	$username=$_POST['username'];
-	$result=login($username,$_POST['password']);
+	$result=login($username,$_POST['password'],$con);
 	//根据result的不同返回值，返回到前台不同的值
 	if($result=="-1"){
 		echo -1;
