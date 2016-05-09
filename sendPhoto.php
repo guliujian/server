@@ -9,4 +9,3 @@ session_start();
 	$_SESSION['photo']="http://192.168.1.101/server/photo/";
 	$_SESSION['photo'].=$pics;
 		echo $pics;
-?>

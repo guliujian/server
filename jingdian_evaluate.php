@@ -1,4 +1,5 @@
 <?php
+	include_once ("mysql_connect.php");
 	function get_jingdian_evaluation($id_name){
 	/*	$usr_id=_SESSION['username'];
 		$status_id=$_POST['status_id'];

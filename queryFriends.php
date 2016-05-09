@@ -1,29 +1,23 @@
 <?php
 session_start();
+require_once ("mysql_connect.php");
 //$_SESSION['userId']= 6;
 $userId = $_SESSION['userId'];
-$con = mysql_connect("localhost","root","");
-if (!$con)
-{
-  die('Could not connect: ' . mysql_error());
-}
-mysql_query("set names 'GB2312'");
-mysql_select_db("test",$con);
-//²éÕÒºÃÓÑµÄÐÅÏ¢
-$sql = "SELECT * FROM tempRelation WHERE user_id2='$userId' and status = 0";//²éÕÒÊÇ·ñÓÐÈËÇëÇóÌí¼ÓÎÒÎªºÃÓÑ
-	$result = mysql_query($sql,$con);	
+//æŸ¥æ‰¾å¥½å‹çš„ä¿¡æ¯
+$sql = "SELECT * FROM tempRelation WHERE user_id2='$userId' and status = 0";//æŸ¥æ‰¾æ˜¯å¦æœ‰äººè¯·æ±‚æ·»åŠ æˆ‘ä¸ºå¥½å‹
+	$result = mysqli_query($con,$sql);
 	if(mysql_num_rows($result)>0)
 	{		
 		$i=0;
-		while($row=mysql_fetch_array($result))
+		while($row=mysqli_fetch_array($result))
 		{
 			$strangeId[$i]=$row['user_id1'];
 			$i++;
 		}
 		for($i=0;$i<count($strangeId);$i++){
 		$sql = "SELECT * FROM user WHERE user_id='$strangeId[$i]'";
-		$result = mysql_query($sql,$con);
-		$row=mysql_fetch_array($result);
+		$result = mysqli_query($con,$sql);
+		$row=mysqli_fetch_array($result);
 		$strange_info_rows[$i]['Longitude']=$row['longitude'];
 		$strange_info_rows[$i]['Latitude']=$row['latitude'];
 		$strange_info_rows[$i]['Head']="http://localhost/register8.24/";
@@ -32,19 +26,18 @@ $sql = "SELECT * FROM tempRelation WHERE user_id2='$userId' and status = 0";//²é
 		$strange_info_rows[$i]['Name']=iconv('gb2312//IGNORE','UTF-8',$row['user_name']);
 		}
 		echo json_encode($strange_info_rows);
-		$sql = "UPDATE tempRelation SET status='1' WHERE user_id2 = '$userId'";//¸üÐÂÇëÇóµÄ×´Ì¬£¬1´ú±í±»Ä¿±ê·½¶ÁÈ¡
+		$sql = "UPDATE tempRelation SET status='1' WHERE user_id2 = '$userId'";//æ›´æ–°è¯·æ±‚çš„çŠ¶æ€ï¼Œ1ä»£è¡¨è¢«ç›®æ ‡æ–¹è¯»å–
 		//echo $sql;
-		$result = mysql_query($sql,$con);
+		$result = mysqli_query($con,$sql);
 		if($result==FALSE)
 		{
-			echo "-1";//¸üÐÂÊ§°Ü
+			echo "-1";//æ›´æ–°å¤±è´¥
 		}
 		else{
-			echo "";//¸üÐÂ³É¹¦
+			echo "";//æ›´æ–°æˆåŠŸ
 		}
 	}
 	else{
-		echo '1';//±íÊ¾Ã»ÓÐÈËÇëÇóÌí¼ÓÎÒÎªºÃÓÑ¡£
+		echo '1';//è¡¨ç¤ºæ²¡æœ‰äººè¯·æ±‚æ·»åŠ æˆ‘ä¸ºå¥½å‹ã€‚
 	}	
-	mysql_close($con);
-?>
+	mysqli_close($con);

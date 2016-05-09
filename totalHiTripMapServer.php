@@ -1,5 +1,6 @@
 <?php
 	session_start();
+	require_once ("mysql_connect.php");
 	//$totalMessage = array();
 	function NotFriend($id,$totalMessage){
 		if($totalMessage['friendInfoInMap']=="")
@@ -14,22 +15,15 @@
 	}
 	$_SESSION['userId']= 1;
 	$userId = $_SESSION['userId'];
-	//$_SESSION['unreadNewsId']=0;//Î´¶ÁºÃÓÑ×´Ì¬
-	//$_SESSION['unreadJingdianNewsId']=0;//Î´¶Á¾°µãÏûÏ¢
-	$con = mysql_connect("localhost","root","");
-	if (!$con)
-	{
-	  die('Could not connect: ' . mysql_error());
-	}
-	mysql_query("set names 'gbk'");
-	mysql_select_db("test",$con);
+	//$_SESSION['unreadNewsId']=0;//æœªè¯»å¥½å‹çŠ¶æ€
+	//$_SESSION['unreadJingdianNewsId']=0;//æœªè¯»æ™¯ç‚¹æ¶ˆæ¯
 	
-	//²éÕÒºÃÓÑµÄÐÅÏ¢
+	//æŸ¥æ‰¾å¥½å‹çš„ä¿¡æ¯
 	$sql = "SELECT user.* FROM user,friends WHERE ((friends.user_id1=$userId AND friends.user_id2=user.user_id) OR (friends.user_id2=$userId AND friends.user_id1=user.user_id) )";
-	$result = mysql_query($sql,$con);
+	$result = mysqli_query($con,$sql);
 	if(mysql_num_rows($result)>0){
 	$i=0;
-	while($row=mysql_fetch_array($result))
+	while($row=mysqli_fetch_array($result))
 	{
 		$friends_info_rows[$i]['Longitude']=$row['longitude'];
 		$friends_info_rows[$i]['Latitude']=$row['latitude'];
@@ -38,18 +32,17 @@
 		$friends_info_rows[$i]['Head'].=$row['portrait'];		
 		$friends_info_rows[$i]['Id']=$row['user_id'];
 		$friends_info_rows[$i++]['Name']=iconv('gb2312//IGNORE','UTF-8',$row['user_name']);
-		
 	}
 	$totalMessage['friendInfoInMap'] = $friends_info_rows;
 	}else{
 		$totalMessage['friendInfoInMap'] = "";
 	}
-	//²éÕÒÂ¿ÓÑµÄÐÅÏ¢
+	//æŸ¥æ‰¾é©´å‹çš„ä¿¡æ¯
 	$sql = "SELECT user.* FROM user WHERE user_id!='$userId'";
-	$result = mysql_query($sql,$con);
+	$result = mysqli_query($con,$sql);
 	if(mysql_num_rows($result)>0){
 	$i=0;
-	while($row=mysql_fetch_array($result))
+	while($row=mysqli_fetch_array($result))
 	{
 		if(NotFriend($row['user_id'],$totalMessage)){
 		$strange_info_rows[$i]['Longitude']=$row['longitude'];
@@ -66,21 +59,21 @@
 	else{
 		$totalMessage['strangeInfoInMap'] = "";
 	}
-	//²éÑ¯ÐÂ×´Ì¬
+	//æŸ¥è¯¢æ–°çŠ¶æ€
 	if(!isset($_SESSION['onlineTime']))
 	$_SESSION['onlineTime'] = date('Y-m-d H:i:s',time());
 	$mysqltime=$_SESSION['onlineTime'];
-	$sql="SELECT * FROM status,friends,user WHERE ((friends.user_id1='$userId' AND friends.user_id2=status.user_id) OR (friends.user_id2='$userId' AND friends.user_id1=status.user_id)) AND user.user_id = status.user_id AND UNIX_TIMESTAMP( time_stamp ) > UNIX_TIMESTAMP ('$mysqltime')";//Ó¦¸ÃÊÇÔÚÏßÖ®ºó£¬ËùÒÔÓÃ´óÓÚºÅ£¬ÕâÀï²âÊÔÓÃÐ¡ÓÚºÅ
+	$sql="SELECT * FROM status,friends,user WHERE ((friends.user_id1='$userId' AND friends.user_id2=status.user_id) OR (friends.user_id2='$userId' AND friends.user_id1=status.user_id)) AND user.user_id = status.user_id AND UNIX_TIMESTAMP( time_stamp ) > UNIX_TIMESTAMP ('$mysqltime')";//åº”è¯¥æ˜¯åœ¨çº¿ä¹‹åŽï¼Œæ‰€ä»¥ç”¨å¤§äºŽå·ï¼Œè¿™é‡Œæµ‹è¯•ç”¨å°äºŽå·
 	if(isset($_SESSION['unreadNewsId'])){
 		$maxReadId=$_SESSION['unreadNewsId'];
 		$sql.= "AND status.status_id>'$maxReadId'";
 	}
-	//¸ÃsqlÓï¾ä²éÕÒÓÃ»§µÇÂ¼Ö®ºó£¬ËùÓÐÓÃ»§ºÃÓÑ·¢²¼µÄÏûÏ¢
-	$result=mysql_query($sql);
+	//è¯¥sqlè¯­å¥æŸ¥æ‰¾ç”¨æˆ·ç™»å½•ä¹‹åŽï¼Œæ‰€æœ‰ç”¨æˆ·å¥½å‹å‘å¸ƒçš„æ¶ˆæ¯
+	$result=mysqli_query($con,$sql);
 	if(mysql_num_rows($result)>0)
 	{	
 		$i=0;
-		while($row=mysql_fetch_array($result))
+		while($row=mysqli_fetch_array($result))
 		{
 			$friends_news[$i]['Longitude']=$row['longitude'];
 			$friends_news[$i]['Latitude']=$row['latitude'];
@@ -96,23 +89,23 @@
 		$totalMessage['friendNews'] = $friends_news;
 	}
 	else{
-		$totalMessage['friendNews']="";//±íÊ¾Ã»ÓÐÐÂÏûÏ¢
+		$totalMessage['friendNews']="";//è¡¨ç¤ºæ²¡æœ‰æ–°æ¶ˆæ¯
 	}
-	//²éÑ¯ÊÇ·ñÓÐÈËÇëÇóÌí¼ÓÎÒÎªºÃÓÑ
-	$sql = "SELECT * FROM tempRelation WHERE user_id2='$userId' and status = 0";//²éÕÒÊÇ·ñÓÐÈËÇëÇóÌí¼ÓÎÒÎªºÃÓÑ
-	$result = mysql_query($sql,$con);	
+	//æŸ¥è¯¢æ˜¯å¦æœ‰äººè¯·æ±‚æ·»åŠ æˆ‘ä¸ºå¥½å‹
+	$sql = "SELECT * FROM tempRelation WHERE user_id2='$userId' and status = 0";//æŸ¥æ‰¾æ˜¯å¦æœ‰äººè¯·æ±‚æ·»åŠ æˆ‘ä¸ºå¥½å‹
+	$result = mysqli_query($con,$sql);
 	if(mysql_num_rows($result)>0)
 	{		
 		$i=0;
-		while($row=mysql_fetch_array($result))
+		while($row=mysqli_fetch_array($result))
 		{
 			$strangeId[$i]=$row['user_id1'];
 			$i++;
 		}
 		for($i=0;$i<count($strangeId);$i++){
 			$sql = "SELECT * FROM user WHERE user_id='$strangeId[$i]'";
-			$result = mysql_query($sql,$con);
-			$row=mysql_fetch_array($result);
+			$result = mysqli_query($con,$sql);
+			$row=mysqli_fetch_array($result);
 			$strange_request_rows[$i]['Longitude']=$row['longitude'];
 			$strange_request_rows[$i]['Latitude']=$row['latitude'];
 			//$strange_request_rows[$i]['Head']="http://localhost/register8.24/";
@@ -122,23 +115,23 @@
 			$strange_request_rows[$i]['Name']=iconv('gb2312//IGNORE','UTF-8',$row['user_name']);
 		}
 		$totalMessage['strangeRequestInfo'] = $strange_request_rows;
-		$sql = "UPDATE tempRelation SET status='1' WHERE user_id2 = '$userId'";//¸üÐÂÇëÇóµÄ×´Ì¬£¬1´ú±í±»Ä¿±ê·½¶ÁÈ¡
-		$result = mysql_query($sql,$con);		
+		$sql = "UPDATE tempRelation SET status='1' WHERE user_id2 = '$userId'";//æ›´æ–°è¯·æ±‚çš„çŠ¶æ€ï¼Œ1ä»£è¡¨è¢«ç›®æ ‡æ–¹è¯»å–
+		$result = mysqli_query($con,$sql);
 	}
 	else{
-		$totalMessage['strangeRequestInfo'] ="";//±íÊ¾Ã»ÓÐÈËÇëÇóÌí¼ÓÎÒÎªºÃÓÑ¡£
+		$totalMessage['strangeRequestInfo'] ="";//è¡¨ç¤ºæ²¡æœ‰äººè¯·æ±‚æ·»åŠ æˆ‘ä¸ºå¥½å‹ã€‚
 	}
-	$sql="SELECT jingdian_inf.*,jingdian_status.*,eyeon.* FROM jingdian_inf,jingdian_status, eyeon WHERE eyeon.jingdian_id=jingdian_inf.jingdian_id AND eyeon.jingdian_id=jingdian_status.jingdian_id AND eyeon.user_id = '$userId' AND UNIX_TIMESTAMP( time_stamp ) > UNIX_TIMESTAMP ('$mysqltime')";//Ó¦¸ÃÊÇÔÚÏßÖ®ºó£¬ËùÒÔÓÃ´óÓÚºÅ£¬ÕâÀï²âÊÔÓÃÐ¡ÓÚºÅ
+	$sql="SELECT jingdian_inf.*,jingdian_status.*,eyeon.* FROM jingdian_inf,jingdian_status, eyeon WHERE eyeon.jingdian_id=jingdian_inf.jingdian_id AND eyeon.jingdian_id=jingdian_status.jingdian_id AND eyeon.user_id = '$userId' AND UNIX_TIMESTAMP( time_stamp ) > UNIX_TIMESTAMP ('$mysqltime')";//åº”è¯¥æ˜¯åœ¨çº¿ä¹‹åŽï¼Œæ‰€ä»¥ç”¨å¤§äºŽå·ï¼Œè¿™é‡Œæµ‹è¯•ç”¨å°äºŽå·
 	if(isset($_SESSION['unreadJingdianNewsId'])){
 		$maxReadId=$_SESSION['unreadJingdianNewsId'];
 		$sql.= " AND jingdian_status.status_id>'$maxReadId'";
 	}
-	//¸ÃsqlÓï¾ä²éÕÒÓÃ»§µÇÂ¼Ö®ºó£¬ËùÓÐ¾°µã·¢²¼µÄÏûÏ¢
-	$result=mysql_query($sql);
+	//è¯¥sqlè¯­å¥æŸ¥æ‰¾ç”¨æˆ·ç™»å½•ä¹‹åŽï¼Œæ‰€æœ‰æ™¯ç‚¹å‘å¸ƒçš„æ¶ˆæ¯
+	$result=mysqli_query($con,$sql);
 	if(mysql_num_rows($result)>0)
 	{	
 		$i=0;
-		while($row=mysql_fetch_array($result))
+		while($row=mysqli_fetch_array($result))
 		{
 			$jingdian_news[$i]['Id']=$row['jingdian_id'];
 			$jingdian_news[$i]['Head']=$row['portrait'];
@@ -151,19 +144,19 @@
 		$totalMessage['JdNews'] = $jingdian_news;
 	}	
 	else{
-		$totalMessage['JdNews']="";//±íÊ¾Ã»ÓÐµØÍ¼ÉÏÃ»ÓÐÐÂÏûÏ¢¡£
+		$totalMessage['JdNews']="";//è¡¨ç¤ºæ²¡æœ‰åœ°å›¾ä¸Šæ²¡æœ‰æ–°æ¶ˆæ¯ã€‚
 	}
 	echo json_encode($totalMessage);
-	//ÕâÀïÊÇ²åÈëÓÃ»§µØÀíÎ»ÖÃµÄÓï¾äÄ£¿é£¬²âÊÔÊ±ÔÝÊ±²»ÓÃ¡£
+	//è¿™é‡Œæ˜¯æ’å…¥ç”¨æˆ·åœ°ç†ä½ç½®çš„è¯­å¥æ¨¡å—ï¼Œæµ‹è¯•æ—¶æš‚æ—¶ä¸ç”¨ã€‚
 	/* 
 	$longitude = $_POST['longitude'];
 	$latitude = $_POST['latitude'];
-	$sql="UPDATE user SET latitude = '$latitude', longitude = '$longitude' WHERE user_id = $userId";//¸üÐÂÓÃ»§×îÐÂÎ»ÖÃ
+	$sql="UPDATE user SET latitude = '$latitude', longitude = '$longitude' WHERE user_id = $userId";//æ›´æ–°ç”¨æˆ·æœ€æ–°ä½ç½®
 	$result=mysql_query($sql);	
 	$sql="INSERT INTO user_location (user_id,latitude,longitude) VALUES ('$userId','$latitude','$longitude')";
-	//²åÈë¼ÇÂ¼ÓÃ»§Î»ÖÃµÄ±í
+	//æ’å…¥è®°å½•ç”¨æˆ·ä½ç½®çš„è¡¨
 	$result=mysql_query($sql);
 	*/
-	mysql_close($con);
-?>
+	mysqli_close($con);
+
 

@@ -1,5 +1,6 @@
 <?php
 	session_start();
+	require_once ("mysql_connect.php");
 	//echo "lanxiang";
 	//$_SESSION['unreadJingdianNewsId']=0;
 	//$jingdianId = $_POST['jingdianId'];
@@ -10,30 +11,22 @@
 	if(!isset($_SESSION['onlineTime']))
 		$_SESSION['onlineTime'] = date('Y-m-d H:i:s',time());
 	$mysqltime=$_SESSION['onlineTime'];
-	$con = mysql_connect("localhost","root","");
-	if (!$con)
-	{
-	  die('Could not connect: ' . mysql_error());
-	}
-	mysql_select_db("test",$con);
-	mysql_query("set names 'gbk'");
 	//$sql="SELECT jingdian_inf.*,jingdian_status.*,eyeon.* FROM jingdian_inf,jingdian_status, eyeon WHERE eyeon.jingdian_id=jingdian_inf.jingdian_id AND eyeon.user_id = '$userId' AND UNIX_TIMESTAMP( time_stamp ) <= UNIX_TIMESTAMP ('$mysqltime')";
 	$sql="SELECT jingdian_inf.*,jingdian_status.*,eyeon.* FROM jingdian_inf,jingdian_status, eyeon WHERE eyeon.jingdian_id=jingdian_inf.jingdian_id AND eyeon.jingdian_id=jingdian_status.jingdian_id AND eyeon.user_id = '$userId' AND UNIX_TIMESTAMP( time_stamp ) > UNIX_TIMESTAMP ('$mysqltime')";
 	//echo $sql;
-	
 	if(isset($_SESSION['unreadJingdianNewsId'])){
 	$maxReadId=$_SESSION['unreadJingdianNewsId'];
 	$sql.= " AND jingdian_status.status_id>'$maxReadId'";
 	}
-	//¸ÃsqlÓï¾ä²éÕÒÓÃ»§µÇÂ¼Ö®ºó£¬ËùÓÐ¾°µã·¢²¼µÄÏûÏ¢
+	//è¯¥sqlè¯­å¥æŸ¥æ‰¾ç”¨æˆ·ç™»å½•ä¹‹åŽï¼Œæ‰€æœ‰æ™¯ç‚¹å‘å¸ƒçš„æ¶ˆæ¯
 	
 	//echo $sql;
 	
-	$result=mysql_query($sql);
+	$result=mysqli_query($con,$sql);
 	if(mysql_num_rows($result)>0)
 	{	
 		$i=0;
-		while($row=mysql_fetch_array($result))
+		while($row=mysqli_fetch_array($result))
 		{
 			$jingdian_news[$i]['Id']=$row['jingdian_id'];
 			$jingdian_news[$i]['Head']=$row['portrait'];
@@ -48,6 +41,5 @@
 	}
 	
 	else{
-		echo '1';//±íÊ¾Ã»ÓÐµØÍ¼ÉÏÃ»ÓÐÐÂÏûÏ¢¡£
+		echo '1';//è¡¨ç¤ºæ²¡æœ‰åœ°å›¾ä¸Šæ²¡æœ‰æ–°æ¶ˆæ¯ã€‚
 	}
-	?>

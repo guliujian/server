@@ -1,5 +1,6 @@
 <?php
 	session_start();
+	require_once ("mysql_connect.php");
 	//echo "lanxiang";
 	//$_SESSION['unreadNewsId']=0;
 	//$_SESSION['userId']=1;
@@ -7,27 +8,20 @@
 	if(!isset($_SESSION['onlineTime']))
 		$_SESSION['onlineTime'] = date('Y-m-d H:i:s',time());
 	$mysqltime=$_SESSION['onlineTime'];
-	$con = mysql_connect("localhost","root","");
-	if (!$con)
-	{
-	  die('Could not connect: ' . mysql_error());
-	}
-	mysql_select_db("test",$con);
-	mysql_query("set names 'gbk'");
 	$sql="SELECT * FROM status,friends,user WHERE ((friends.user_id1='$userId' AND friends.user_id2=status.user_id) OR (friends.user_id2='$userId' AND friends.user_id1=status.user_id)) AND user.user_id = status.user_id AND UNIX_TIMESTAMP( time_stamp ) >= UNIX_TIMESTAMP ('$mysqltime')";
 	if(isset($_SESSION['unreadNewsId'])){
 	$maxReadId=$_SESSION['unreadNewsId'];
 	$sql.= "AND status.status_id>'$maxReadId'";
 	}
-	//¸ÃsqlÓï¾ä²éÕÒÓÃ»§µÇÂ¼Ö®ºó£¬ËùÓÐÓÃ»§ºÃÓÑ·¢²¼µÄÏûÏ¢
+	//è¯¥sqlè¯­å¥æŸ¥æ‰¾ç”¨æˆ·ç™»å½•ä¹‹åŽï¼Œæ‰€æœ‰ç”¨æˆ·å¥½å‹å‘å¸ƒçš„æ¶ˆæ¯
 	
 	//echo $sql;
 	
-	$result=mysql_query($sql);
+	$result=mysqli_query($con,$sql);
 	if(mysql_num_rows($result)>0)
 	{	
 		$i=0;
-		while($row=mysql_fetch_array($result))
+		while($row=mysqli_fetch_array($result))
 		{
 			$friends_news[$i]['Longitude']=$row['longitude'];
 			$friends_news[$i]['Latitude']=$row['latitude'];
@@ -43,6 +37,5 @@
 		echo json_encode($friends_news);
 	}
 	else{
-		echo '1';//±íÊ¾Ã»ÓÐµØÍ¼ÉÏÃ»ÓÐÐÂÏûÏ¢¡£
+		echo '1';//è¡¨ç¤ºæ²¡æœ‰åœ°å›¾ä¸Šæ²¡æœ‰æ–°æ¶ˆæ¯ã€‚
 	}
-	?>

@@ -1,30 +1,24 @@
 <?php
 session_start();
+require_once ("mysql_connect.php");
 $userId = $_SESSION['userId'];
 $longitude = $_POST['longitude'];
 $latitude = $_POST['latitude'];
-$con = mysql_connect("localhost","root","");
-if (!$con)
-{
-  die('Could not connect: ' . mysql_error());
-}
-mysql_select_db("test",$con);
-$sql="UPDATE user SET latitude = '$latitude', longitude = '$longitude' WHERE user_id = $userId";//¸üÐÂÓÃ»§×îÐÂÎ»ÖÃ
+$sql="UPDATE user SET latitude = '$latitude', longitude = '$longitude' WHERE user_id = $userId";//æ›´æ–°ç”¨æˆ·æœ€æ–°ä½ç½®
 //echo $sql;
-$result=mysql_query($sql);
+$result=mysqli_query($con,$sql);
 if($result==FALSE){
-	echo -1;//³ö´íÁË¡£
+	echo -1;//å‡ºé”™äº†ã€‚
 }
 else{
-	echo 0;//ÕýÈ·
+	echo 0;//æ­£ç¡®
 }
 $sql="INSERT INTO user_location (user_id,latitude,longitude) VALUES ('$userId','$latitude','$longitude')";
-//²åÈë¼ÇÂ¼ÓÃ»§Î»ÖÃµÄ±í
-$result=mysql_query($sql);
+//æ’å…¥è®°å½•ç”¨æˆ·ä½ç½®çš„è¡¨
+$result=mysqli_query($con,$sql);
 if($result==FALSE){
-	echo -1;//³ö´íÁË¡£
+	echo -1;//å‡ºé”™äº†ã€‚
 }
 else{
-	echo 0;//ÕýÈ·
+	echo 0;//æ­£ç¡®
 }
-?>

@@ -1,38 +1,32 @@
 <?php
 	//session_start();
+	include_once ("mysql_connect.php");
 	function jingdian_status(){
-		$con = mysql_connect("localhost","root","");
-		if (!$con)
-		{
-		  die('Could not connect: ' . mysql_error());
-		}
-		mysql_select_db("test",$con);
-		//$_SESSION['userId']=1;//ÔÝÊ±¸øuserId¸³Öµ¸ø1£¬Êµ¼ÊÉÏµÇÂ¼Ê±¼´¿É¸³Öµ
+		//$_SESSION['userId']=1;//æš‚æ—¶ç»™userIdèµ‹å€¼ç»™1ï¼Œå®žé™…ä¸Šç™»å½•æ—¶å³å¯èµ‹å€¼
 		//$user_id=$_SESSION['userId'];
 		//return $con;
 		$unread_id=$_SESSION['unread_id'];
 		//return $unread_id;
-		mysql_query("set names 'gbk'");
-		//²âÊÔÊ±½«user_id¸³ÖµÎª1£¬Êµ¼ÊÖÐÒªÓÃµ½È«¾Ö±äÁ¿SESSION['userId'] y
+		//æµ‹è¯•æ—¶å°†user_idèµ‹å€¼ä¸º1ï¼Œå®žé™…ä¸­è¦ç”¨åˆ°å…¨å±€å˜é‡SESSION['userId'] y
 		$sql = "SELECT * FROM jingdian_status WHERE status_id<$unread_id AND jingqu_id=1 ORDER BY time_stamp  DESC LIMIT 1";//select 6 entry everty time
 		//echo $sql;
-		$result = mysql_query($sql,$con);
+		$result = mysqli_query($con,$sql);
 		//echo $result;
 		
 		//return $result;
 		$friends_status_rows="";
 		$i=0;
 		$j=0;
-		while($row=mysql_fetch_array($result))
+		while($row=mysqli_fetch_array($result))
 		{
 			$sql1 = "SELECT portrait FROM jingdian_inf WHERE jingdian_id=".$row['jingdian_id']."";
 			//$sql2 = "SELECT * FROM status_reply WHERE status_id=".$row['status_id']."";
 			$sql_name = "SELECT jingdian_name FROM jingdian_inf WHERE jingdian_id=".$row['jingdian_id']."";
-			$name1=mysql_query($sql_name,$con);
-			$name=mysql_fetch_array($name1);
-			$result1 = mysql_query($sql1,$con);
+			$name1=mysqli_query($con,$sql_name);
+			$name=mysqli_fetch_array($name1);
+			$result1=mysqli_query($con,$sql1);
 			//$result2 = mysql_query($sql2,$con);
-			$res1=mysql_fetch_array($result1);
+			$res1=mysqli_fetch_array($result1);
 			//$usr_id=$row2['name_id'];
 			$friends_status_rows[$i]['Head']=$res1['portrait'];		
 			$friends_status_rows[$i]['Name']=iconv('gb2312//IGNORE','UTF-8',$name['jingdian_name']);
@@ -53,9 +47,9 @@
 			//return $entryId;
 			$_SESSION['unread_id']=$entryId;
 			//return $_SESSION['unread_id'];
-			$sql_set_back_id="UPDATE unread_entry SET entry_id='$entryId' WHERE user_id_receive=20022";//¸üÐÂunread_entryÊý¾Ý¿â£¬µ±Ç°µÄ×´Ì¬idÌæ»»½øÈ¥()_Ö±½ÓÔÚsessionÖÐÉèÖÃÒ»¸ö±äÁ¿À´ÊµÏÖ(´Ë´¦¼ÙÉè¸ÃÓÃ»§µÄidÎª20022£¬ÒÔºóÓÃÒªÊäÈë)
-			$set=mysql_query($sql_set_back_id,$con);
-			mysql_close($con);
+			$sql_set_back_id="UPDATE unread_entry SET entry_id='$entryId' WHERE user_id_receive=20022";//æ›´æ–°unread_entryæ•°æ®åº“ï¼Œå½“å‰çš„çŠ¶æ€idæ›¿æ¢è¿›åŽ»()_ç›´æŽ¥åœ¨sessionä¸­è®¾ç½®ä¸€ä¸ªå˜é‡æ¥å®žçŽ°(æ­¤å¤„å‡è®¾è¯¥ç”¨æˆ·çš„idä¸º20022ï¼Œä»¥åŽç”¨è¦è¾“å…¥)
+			$set=mysqli_query($con,$sql_set_back_id);
+			mysqli_close($con);
 		if($i==-1)
 		{
 			return 0;
@@ -63,4 +57,3 @@
 			return $friends_status_rows;
 	}
 	
-?>

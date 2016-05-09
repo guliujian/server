@@ -1,30 +1,22 @@
 <?php
-//µã»÷ÎÒµÄÖ÷Ò³Ê±µ÷ÓÃ£¬½«unread_reply¸³ÖµÎª×î´ó£¬¼´È«¶¼Î´¶Á
+//ç‚¹å‡»æˆ‘çš„ä¸»é¡µæ—¶è°ƒç”¨ï¼Œå°†unread_replyèµ‹å€¼ä¸ºæœ€å¤§ï¼Œå³å…¨éƒ½æœªè¯»
 	session_start();
 	include "jingdian_evaluate.php";
-	
+	require_once ("mysql_connect.php");
 	//echo $_POST['id_name'];
-		$con = mysql_connect("localhost","root","");
-		if (!$con)
-		{
-		  die('Could not connect: ' . mysql_error());
-		}
-		mysql_select_db("test",$con);
-		//$_SESSION['userId']=1;//ÔÝÊ±¸øuserId¸³Öµ¸ø1£¬Êµ¼ÊÉÏµÇÂ¼Ê±¼´¿É¸³Öµ
+		//$_SESSION['userId']=1;//æš‚æ—¶ç»™userIdèµ‹å€¼ç»™1ï¼Œå®žé™…ä¸Šç™»å½•æ—¶å³å¯èµ‹å€¼
 		//$user_id=$_SESSION['userId'];
 		//return $con;
-		//²âÊÔÊ±½«user_id¸³ÖµÎª1£¬Êµ¼ÊÖÐÒªÓÃµ½È«¾Ö±äÁ¿SESSION['userId'] y
+		//æµ‹è¯•æ—¶å°†user_idèµ‹å€¼ä¸º1ï¼Œå®žé™…ä¸­è¦ç”¨åˆ°å…¨å±€å˜é‡SESSION['userId'] y
 		$sql = "SELECT evaluate_id FROM jingdian_evaluate WHERE jingdian_id=2 ORDER BY time_stamp  DESC LIMIT 1";//select 6 entry everty time
-		$result = mysql_query($sql,$con);
-		$unread_id=mysql_fetch_array($result);		
+		$result =mysqli_query($con,$sql);
+		$unread_id=mysqli_fetch_array($result);
 		$_SESSION['unread_evaluate_id']=$unread_id['evaluate_id'];
 		$_SESSION['unread_evaluate_id']++;
-		mysql_close($con);
+		mysqli_close($con);
 		//echo $_SESSION['unread_id'];
 		//echo $_POST;
 		$id_name=$_POST['id_name'];
 		$res=get_jingdian_evaluation($id_name);
 		//echo json_encode($_SESSION['unread_id']);
-		
 		echo json_encode($res);
-?>

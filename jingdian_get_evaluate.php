@@ -1,5 +1,6 @@
 <?php
 	session_start();
+	include_once ("mysql_connect.php");
 	//echo "lala";
 	//$_SESSION['evaluator_id']='20099';//此处设置用户id为20099，在登陆的时候会将SESSION的user_id赋值的
 	$evaluate['evaluator_id']=$_SESSION['evaluator_id'];//实际上应为user_id但此处测试，所以就暂时定义一个evaluator_id

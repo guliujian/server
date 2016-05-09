@@ -1,17 +1,11 @@
 <?php
 	function remind(){
-		$con = mysql_connect("localhost","root","");
-		if (!$con)
-		{
-		  die('Could not connect: ' . mysql_error());
-		}
-		mysql_select_db("test",$con);
-		//获得之前读到的状态id
-		$sql = "SELECT * FROM status_reply WHERE object_user_name=1";//选择出回复对象是该用户的flag字段，从而得知是否有未查看的回复
-		$result = mysql_query($sql,$con);
+		//鑾峰緱涔嬪墠璇诲埌鐨勭姸鎬乮d
+		$sql = "SELECT * FROM status_reply WHERE object_user_name=1";//閫夋嫨鍑哄洖澶嶅璞℃槸璇ョ敤鎴风殑flag瀛楁锛屼粠鑰屽緱鐭ユ槸鍚︽湁鏈煡鐪嬬殑鍥炲
+		$result = mysqli_query($con,$sql);
 		$flag=0;
 		$entry_id="";
-		while($row=mysql_fetch_array($result)){
+		while($row=mysqli_fetch_array($result)){
 			if($row['flag']=="1"){
 				$flag=1;
 				return 1;
@@ -20,9 +14,7 @@
 		if($flag==0){
 			return 0;
 		}
-	
 }
 	
 	$result=remind();
 	echo json_encode($result);
-?>

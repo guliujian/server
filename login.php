@@ -1,37 +1,27 @@
 <?php
 		session_start();
+		include_once ("mysql_connect.php");
 		function login($l_name,$l_password){
-		$con = mysql_connect("localhost","root","");
-		if (!$con)
-		 {
-		  die('Could not connect: ' . mysql_error());
-		 }
-
-		mysql_select_db("test",$con);
-		mysql_query("set names 'gbk'");
 		$l_name=iconv('UTF-8','gb2312//IGNORE',$l_name);
-		$sql_reg="SELECT * FROM user WHERE user_name='$l_name'";//Ñ¡ÔñÐÕÃûÎªÊäÈëÖµµÄÒ»Ìõ¼ÇÂ¼
-
-		$result1=mysql_query($sql_reg);
+		$sql_reg="SELECT * FROM user WHERE user_name='$l_name'";//é€‰æ‹©å§“åä¸ºè¾“å…¥å€¼çš„ä¸€æ¡è®°å½•
+		$result1=mysqli_query($con,$sql_reg);
 		$password="";
 		$usr_id="";
-		while($rs=mysql_fetch_array($result1)){//½«¸Ã¼ÇÂ¼ÖÐµÄÃÜÂëºÍidºÅÄÃ³öÀ´
-
+		while($rs=mysqli_fetch_array($result1)){//å°†è¯¥è®°å½•ä¸­çš„å¯†ç å’Œidå·æ‹¿å‡ºæ¥
 			$password=$rs['password'];
 			$usr_id=$rs['user_id'];
 		}
-			if($password==""){//Èç¹ûÃÜÂëÎª¿ÕËµÃ÷Êý¾Ý¿âÖÐ²»´æÔÚÊäÈëµÄÓÃ»§Ãû£¬·µ»Ø-1
+			if($password==""){//å¦‚æžœå¯†ç ä¸ºç©ºè¯´æ˜Žæ•°æ®åº“ä¸­ä¸å­˜åœ¨è¾“å…¥çš„ç”¨æˆ·åï¼Œè¿”å›ž-1
 				return "-1";
 			}
 			else 
 			//echo($rs['password']);
-			if($password==$l_password){//Èç¹ûÃÜÂëµÈÓÚÊäÈëµÄÃÜÂë£¬ËµÃ÷µÇÂ½³É¹¦£¬·µ»Ø0£¬²¢½«ÃÜÂëÓëidºÅ¸³Öµµ½È«¾Ö±äÁ¿
-			
+			if($password==$l_password){//å¦‚æžœå¯†ç ç­‰äºŽè¾“å…¥çš„å¯†ç ï¼Œè¯´æ˜Žç™»é™†æˆåŠŸï¼Œè¿”å›ž0ï¼Œå¹¶å°†å¯†ç ä¸Židå·èµ‹å€¼åˆ°å…¨å±€å˜é‡
 				$_SESSION['userName']=$l_name;
 				$_SESSION['userId']=$usr_id;
 				return "0";
 			}
-			else{//Ê£ÏÂµÄÇé¿ö¼´ÎªÊäÈëÃÜÂëÓëÊý¾Ý¿âÃÜÂë²»Ïà·û£¬Òò´Ë·µ»Ø1£¬ËµÃ÷ÊäÈëÃÜÂë´íÎó
+			else{//å‰©ä¸‹çš„æƒ…å†µå³ä¸ºè¾“å…¥å¯†ç ä¸Žæ•°æ®åº“å¯†ç ä¸ç›¸ç¬¦ï¼Œå› æ­¤è¿”å›ž1ï¼Œè¯´æ˜Žè¾“å…¥å¯†ç é”™è¯¯
 			//echo $result1;
 				return "1";
 			}
@@ -39,7 +29,7 @@
 	}
 	$username=$_POST['username'];
 	$result=login($username,$_POST['password']);
-	//¸ù¾ÝresultµÄ²»Í¬·µ»ØÖµ£¬·µ»Øµ½Ç°Ì¨²»Í¬µÄÖµ
+	//æ ¹æ®resultçš„ä¸åŒè¿”å›žå€¼ï¼Œè¿”å›žåˆ°å‰å°ä¸åŒçš„å€¼
 	if($result=="-1"){
 		echo -1;
 	}
@@ -50,5 +40,3 @@
 	else{
 		echo 1;
 	}
-
-?>
