@@ -27,7 +27,8 @@
 			}
 		
 	}
-	$username=$_POST['username'];
+//	$username=$_POST['username'];
+    $username=$_POST['username'];
 	$result=login($username,$_POST['password'],$con);
 	//根据result的不同返回值，返回到前台不同的值
 	if($result=="-1"){

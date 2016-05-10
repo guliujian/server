@@ -6,11 +6,13 @@ function register($user_name, $password, $gender, $age, $con) {
 		$pic = $_SESSION['pic'];//获取肖像信息
 		//		$sql_reg = "INSERT INTO user (user_name,password,gender,age,portrait) VALUES('$user_name','$password','$gender','$age','$pic')";
 		//echo $sql_reg;
-		$sql_reg = "INSERT INTO user(user_name, passowrd, gender, age,portrait) VALUES ('$user_name','$password','$gender','$age','$pic')";
+//		$sql_reg = "INSERT INTO user(user_name, passowrd, gender, age,portrait) VALUES ('$user_name','$password','$gender','$age','$pic')";
+        $sql_reg= "INSERT  INTO user(user_name, password, gender, age, portrait) VALUES ('$user_name','$password','$gender','$age','$pic')";
 		unset($_SESSION['pic']);
 	} else {
 		//		$sql_reg="INSERT INTO user (user_name,password,gender,age) VALUES('$user_name','$password','$gender','$age')";
-		$sql_reg = "INSERT INTO user(user_name, passowrd, gender, age) VALUES ('$user_name','$password','$gender','$age')";
+//		$sql_reg = "INSERT INTO user(user_name, passowrd, gender, age) VALUES ('$user_name','$password','$gender','$age')";
+        $sql_reg = "INSERT INTO user(user_name, password, gender, age) VALUES ('$user_name','$password','$gender','$age')";
 	}
 	//echo $sql_reg;
 	//		mysql_query("set names 'gbk'");
