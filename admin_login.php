@@ -13,8 +13,8 @@ $result=mysqli_query($con,$sql);
 $rs=mysqli_fetch_array($result);
 if($password=$rs['password']){
 //    return true;
-    echo "<script type='text/javascript'>alert('登陆成功');location='admin.php';</script>";
+    echo "<script type='text/javascript'>alert('登陆成功');location='./admin-form.html';</script>";
 }else{
 //    return false;
-    echo "<script type='text/javascript'>alert('密码错误');location='index.html';</script>";
+    echo "<script type='text/javascript'>alert('密码错误');location='./index.html';</script>";
 }
